@@ -218,7 +218,7 @@ public class ScormExport : EditorWindow {
 								"\t</organization>\n" +
 								"</organizations>\n" +
 								"<resources>\n" +
-								"\t<resource identifier=\"r1\" type=\"webcontent\" adlcp:scormType=\"sco\" href=\""+PlayerPrefs.GetString("Course_Export_Name")+".html\">\n" +
+								"\t<resource identifier=\"r1\" type=\"webcontent\" adlcp:scormType=\"sco\" href=\"index.html\">\n" +
 								"\t\t<file href=\""+PlayerPrefs.GetString("Course_Export_Name")+".html\" />\n" +
 								"\t\t<file href=\"scripts/scorm.js\" />\n" +
 								"\t\t<file href=\"scripts/ScormSimulator.js\" />\n" +

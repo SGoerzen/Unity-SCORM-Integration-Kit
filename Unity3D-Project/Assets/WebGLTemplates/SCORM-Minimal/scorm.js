@@ -154,7 +154,7 @@ function doTerminate()
 ** Wraps the call to the GetValue method
 **
 *******************************************************************************/
-function doGetValue(identifier,objectname,callbackname,randomnumber)
+function doGetValue(identifier,objectname,callbackname,key)
 {  
    // JP TODO - temp hack to get rid of the value for strings and associated language data model elements
    var dotBindingName = identifier.replace(".Value", "");
@@ -194,10 +194,10 @@ function doGetValue(identifier,objectname,callbackname,randomnumber)
          result = "";
        ///Rob Chadwick - 6/1/12 - fixed bug where result.tostring failed where the LMS returns null
        ///This should never happed, but it does in some broken LMS's
-       GetUnity().SendMessage(objectname, callbackname, result+"" + "|" + error.code + "|" + error.string + "|" + randomnumber);
+       unityInstance.SendMessage(objectname, callbackname, result+"" + "|" + error.code + "|" + error.string + "|" + key);
       }else
      {
-      GetUnity().SendMessage(objectname, callbackname, result+"" + "|" + "|" + "|" + randomnumber);
+     unityInstance.SendMessage(objectname, callbackname, result+"" + "|" + "|" + "|" + key);
      }
    }
   }
@@ -249,10 +249,10 @@ function doSetValue(identifier,value,objectname,callbackname,randomnumber)
       {
          var err = ErrorHandler();
          message("SetValue("+dotBindingName+", "+value+") failed. \n"+ err.code + ": " + err.string);
-       GetUnity().SendMessage(objectname, callbackname, result.toString() + "|" + err.code + "|" + err.string + "|" + randomnumber);
+       unityInstance.SendMessage(objectname, callbackname, result.toString() + "|" + err.code + "|" + err.string + "|" + randomnumber);
       }else
      {
-      GetUnity().SendMessage(objectname, callbackname, result.toString() + "|"  + "|"  + "|" + randomnumber);
+      unityInstance.SendMessage(objectname, callbackname, result.toString() + "|"  + "|"  + "|" + randomnumber);
      }
    }
 }   
@@ -282,7 +282,7 @@ function doIsScorm2004(objectname,callbackname,randomnumber)
       //DebugPrint("doIsScorm2004 failed - Could not initialize communication with the LMS - error code: " + error.code);
    }
   
-   GetUnity().SendMessage(objectname, callbackname, versionIsSCORM2004 + "|"+"|"+"|" + randomnumber);
+   unityInstance.SendMessage(objectname, callbackname, versionIsSCORM2004 + "|"+"|"+"|" + randomnumber);
 }
 
 /*******************************************************************************
@@ -459,7 +459,7 @@ function ErrorHandler()
    var api = getAPIHandle();
    if (api == null)
    {
-      message("Unable to locate the LMS's API Implementation.\nCannot determine LMS error code.");
+      message("Unable to locate the LMS's API Implementation.\nCannot determinegetAPIHandle LMS error code.");
       error.code = _GeneralException.code;
       error.string = _GeneralException.string;
       error.diagnostic = "Unable to locate the LMS's API Implementation. Cannot determine LMS error code.";
@@ -621,7 +621,7 @@ var scorm = (function(){
    return {
       foo: function(str){
          alert(str);
-         GetUnity().SendMessage("GameObject", "fromweb", "message from web");
+         unityInstance.SendMessage("GameObject", "fromweb", "message from web");
       }
    };
    

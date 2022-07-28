@@ -30,13 +30,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 
 /// <summary>
-/// Scorm API wrapper.  Forms the 'Bridge' between the Unity3D code and the scorm.js code that communicates with teh LMS.
+/// Scorm API wrapper.  Forms the 'Bridge' between the Unity3D code and the scorm.js code that communicates with the LMS.
 /// </summary>
 /// <remarks>
 /// In order for Unity3D to communicate with the LMS, it needs to do so via the scorm.js code located in the HTML that 'wraps' the Unity3D webplayer.
-/// Unity allows us to run extrenal calls to the enclosing HTML wrapper via UnityEngine.Application.ExternalCall().  In turn, the HTML wrapper can call Unity3D function via GetUnity().SendMessage().
+/// Unity allows us to run extrenal calls to the enclosing HTML wrapper via the /plugins/scorm.jslib Javascript library (note the DllImport statements at the top of this class).  In turn, the HTML wrapper can call Unity3D function via unityInstance.SendMessage().
 /// However, this kind of communication is asynchronous, which makes it difficult to get return values from a call to the HTML wrapper back into the calling Unity3D function.
 /// (E.g. if you call a GetValue() to the LMS via scorm.js, how do you get the result?
 /// 
@@ -52,6 +53,25 @@ using System.Collections.Generic;
 /// 
 /// </remarks>
 public class ScormAPIWrapper {
+
+	[DllImport("__Internal")]
+	private static extern void wgldebugPrint(string str);
+
+	[DllImport("__Internal")]
+	private static extern void wgldoIsScorm2004(string objectname, string callbackname, int randomnumber);
+
+	[DllImport("__Internal")]
+	private static extern void wgldoGetValue(string identifier, string CallbackObjectName, string CallbackFunctionName, int key);
+
+	[DllImport("__Internal")]
+	private static extern void wgldoSetValue(string identifier, string value, string CallbackObjectName, string CallbackFunctionName, int key);
+
+	[DllImport("__Internal")]
+	private static extern void wgldoCommit();
+
+	[DllImport("__Internal")]
+	private static extern void wgldoTerminate();
+
 
 
 	/// <summary>This holds the values of the result of the SCORM API Callback from scorm.js</summary>
@@ -113,10 +133,11 @@ public class ScormAPIWrapper {
 	public void Initialize() 	{
 		IsScorm2004 = true;
 		
-		int key = SetupCallback();
-		UnityEngine.Application.ExternalCall("doIsScorm2004",new object[] {CallbackObjectName, CallbackFunctionName, key });
-		
-		string result = WaitForReturn(key).Result;
+		var key = SetupCallback();
+
+		wgldoIsScorm2004(CallbackObjectName, CallbackFunctionName, key);
+
+		var result = WaitForReturn(key).Result;
 		IsScorm2004 = System.Convert.ToBoolean(result);
 		if(IsScorm2004)
 			Log("ScormVersion is 2004");
@@ -134,7 +155,7 @@ public class ScormAPIWrapper {
 	/// A key value that is not currently being used in the map.
 	/// </returns>
 	int GetRandomKey() {		
-		int key = random.Next(65536);
+		var key = random.Next(65536);
 		while (CallbackValues.ContainsKey(key))
 			key = random.Next(65536);
 		return key;		
@@ -151,7 +172,7 @@ public class ScormAPIWrapper {
 	/// </returns>
 	int SetupCallback() 	{
 		lock (CallbackValues) {
-			int key = GetRandomKey();
+			var key = GetRandomKey();
 			CallbackValues[key] = null;
 			return key;
 		}
@@ -165,15 +186,15 @@ public class ScormAPIWrapper {
 	/// sent into the javascript layer, and sent back to the ScormManager as part of the response. The 
 	/// ScormManager inserts the message value into the queue. After this, the thread sleeps a bit (the TimePerPoll value), it checks
 	/// the queue to see if it got an answer to this request. If so, you get back the value of that message.
-	/// This all happens to allow the ScormManager to pretend that the set functions it calls on the Scorm API Wrapper
+	/// This all happens to allow the ScormManager to pretend that the set and get functions it calls on the Scorm API Wrapper
 	/// are synchronous.
 	/// </remarks>
 	/// <returns>
 	/// The return of the javascript commands associated with this key.
 	/// </returns>
 	APICallResult WaitForReturn(int key) {
-		int timeout = 0;
-		bool wait = true;
+		var timeout = 0;
+		var wait = true;
 
 		lock (CallbackValues) {
 			wait = CallbackValues[key] == null && timeout < TimeToWaitForReply;		//Wait = true if the CallbackValues for this call is empty (not yet processed or timeout is reached
@@ -193,7 +214,7 @@ public class ScormAPIWrapper {
 			Log("timeout");
 
 		lock (CallbackValues) {
-			APICallResult ret = CallbackValues[key];								//Fetch the callback values for this call (key)
+			var ret = CallbackValues[key];								//Fetch the callback values for this call (key)
 			CallbackValues.Remove(key);												//Remove this callback from the list (don't need to process it as we now have the value)
 			return ret;																//Return the APICallResult for this call
 		}
@@ -215,8 +236,8 @@ public class ScormAPIWrapper {
 					string input;
 					input = ResponseQueue.Dequeue();								//Get the next queued response from scorm.js
 
-					string[] tokens = input.Split('|');									//Split the result into the components (see the scorm.js file for details
-					int key = System.Convert.ToInt32(tokens[tokens.Length-1]);			//Fetch the key (as an int32)
+					var tokens = input.Split('|');									//Split the result into the components (see the scorm.js file for details
+					var key = System.Convert.ToInt32(tokens[tokens.Length-1]);			//Fetch the key (as an int32)
 				
 					lock (CallbackValues) {
 						CallbackValues[key] = new ScormAPIWrapper.APICallResult();		//Create a new APICallResult object for this call (key)
@@ -228,7 +249,7 @@ public class ScormAPIWrapper {
 				}
 			}
 		} catch (Exception e) {
-				UnityEngine.Application.ExternalCall("DebugPrint", "***processQueue***" + e.Message +"<br/>" + e.StackTrace + "<br/>" + e.Source);	//Send debug error message to the html wrapper
+			    wgldebugPrint("***processQueue***" + e.Message + "<br/>" + e.StackTrace + "<br/>" + e.Source);
 		}
 
 	}
@@ -243,8 +264,8 @@ public class ScormAPIWrapper {
 					
 				}
 				
-				string[] tokens = input.Split('|');									//Split the result into the components (see the scorm.js file for details
-				int key = System.Convert.ToInt32(tokens[tokens.Length-1]);			//Fetch the key (as an int32)
+				var tokens = input.Split('|');									//Split the result into the components (see the scorm.js file for details
+				var key = System.Convert.ToInt32(tokens[tokens.Length-1]);			//Fetch the key (as an int32)
 				
 				lock (CallbackValues) {
 					CallbackValues[key] = new ScormAPIWrapper.APICallResult();		//Create a new APICallResult object for this call (key)
@@ -255,7 +276,7 @@ public class ScormAPIWrapper {
 				}
 			}
 			catch (Exception e) {
-				UnityEngine.Application.ExternalCall("DebugPrint", "***processQueue***" + e.Message +"<br/>" + e.StackTrace + "<br/>" + e.Source);	//Send debug error message to the html wrapper
+				wgldebugPrint("***processQueue***" + e.Message + "<br/>" + e.StackTrace + "<br/>" + e.Source);
 			}
 		}
 	}
@@ -287,14 +308,14 @@ public class ScormAPIWrapper {
 	/// The dot notation identifier of the data model element to get
 	/// </param>
 	public string GetValue(string identifier) {
-		string result = "";
+		var result = "";
 
-		int key = SetupCallback();													//Set the key for this call (identifies the call when processing the returned results in the queue
+		var key = SetupCallback();													//Set the key for this call (identifies the call when processing the returned results in the queue
 		Log("Get " + identifier);
 
-		UnityEngine.Application.ExternalCall("doGetValue", new object[] { identifier , CallbackObjectName, CallbackFunctionName, key });  //Call to scorm.js
-		
-		APICallResult returnval = WaitForReturn(key);
+		wgldoGetValue(identifier, CallbackObjectName, CallbackFunctionName, key);
+
+		var returnval = WaitForReturn(key);
 
 		result = returnval.Result;
 		
@@ -320,14 +341,14 @@ public class ScormAPIWrapper {
 	/// <param name="identifier">The dot notation identifier of the data model element to set.</param>
 	/// <param name="value">Value to set</param>
 	public bool SetValue(string identifier, string value) 	{
-		bool result = false;
+		var result = false;
 
-		int key = SetupCallback();													//Set the key for this call (identifies the call when processing the returned results in the queue
+		var key = SetupCallback();													//Set the key for this call (identifies the call when processing the returned results in the queue
 		Log( "Set  " + identifier + " to " + value);
 
-		UnityEngine.Application.ExternalCall("doSetValue", new object[] { identifier, value, CallbackObjectName, CallbackFunctionName, key });	//Call to scorm.js
+		wgldoSetValue(identifier, value, CallbackObjectName, CallbackFunctionName, key);
 
-		APICallResult returnval = WaitForReturn(key);
+		var returnval = WaitForReturn(key);
 		if(returnval.ErrorCode == "") {
 			Log("Result " + returnval.Result);
 			result = true;
@@ -338,18 +359,20 @@ public class ScormAPIWrapper {
 		return result;		
 	}
 
+	public bool SetValue(string identifier, float value) => SetValue(identifier, value.ToString());
+	public bool SetValue(string identifier, int value) => SetValue(identifier, value.ToString());
 	/// <summary>
 	/// Call the commit function in the javascript layer
 	/// </summary>
 	public void Commit() {
-		UnityEngine.Application.ExternalCall("doCommit");	
+		wgldoCommit();
 	}
 
 	/// <summary>
 	/// Call the terminate function in the javascript layer
 	/// </summary>
 	public void Terminate() {
-		UnityEngine.Application.ExternalCall("doTerminate");	
+		wgldoTerminate();
 	}
 
 

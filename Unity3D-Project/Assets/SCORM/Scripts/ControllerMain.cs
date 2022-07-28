@@ -527,8 +527,8 @@ public class ControllerMain : MonoBehaviour {
 			newObjective.completionStatus = StudentRecord.CompletionStatusType.not_attempted;
 			newObjective.progressMeasure = 0f;
 
-			ScormManager.AddObjective(newObjective);
 			int index = ScormManager.GetObjectives().Count;
+			ScormManager.AddObjective(newObjective);
 			AddObjectiveToList(index, newObjective);
 			
 			//Reset Fields
