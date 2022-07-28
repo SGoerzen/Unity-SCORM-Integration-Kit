@@ -470,10 +470,10 @@ public class ControllerMain : MonoBehaviour {
 
 		if (commentText == "" | commentLocation == "") {												// Validate the Input Elements
 			if (commentText == "") {
-				inputFieldComment.transform.FindChild ("Placeholder").gameObject.GetComponent<Text> ().text = "You must enter a comment!";
+				inputFieldComment.transform.Find ("Placeholder").gameObject.GetComponent<Text> ().text = "You must enter a comment!";
 			}
 			if (commentLocation == "") {
-				inputFieldCommentLocation.transform.FindChild ("Placeholder").gameObject.GetComponent<Text> ().text = "You must enter a location!";
+				inputFieldCommentLocation.transform.Find ("Placeholder").gameObject.GetComponent<Text> ().text = "You must enter a location!";
 			}
 		} else {																						// Add the Comment
 			StudentRecord.CommentsFromLearner comment = new StudentRecord.CommentsFromLearner();
@@ -488,8 +488,8 @@ public class ControllerMain : MonoBehaviour {
 			//Reset Fields
 			inputFieldComment.GetComponent<InputField> ().text = "";
 			inputFieldCommentLocation.GetComponent<InputField> ().text = "";
-			inputFieldComment.transform.FindChild ("Placeholder").gameObject.GetComponent<Text> ().text = "New Learner Comment...";
-			inputFieldCommentLocation.transform.FindChild ("Placeholder").gameObject.GetComponent<Text> ().text = "Comment Location...";
+			inputFieldComment.transform.Find ("Placeholder").gameObject.GetComponent<Text> ().text = "New Learner Comment...";
+			inputFieldCommentLocation.transform.Find ("Placeholder").gameObject.GetComponent<Text> ().text = "Comment Location...";
 		}
 	}
 
@@ -506,10 +506,10 @@ public class ControllerMain : MonoBehaviour {
 		
 		if (objectiveId == "" | objectiveDescription == "") {												// Validate the Input Elements
 			if (objectiveId == "") {
-				inputFieldObjectiveId.transform.FindChild ("Placeholder").gameObject.GetComponent<Text> ().text = "You must enter an ID!";
+				inputFieldObjectiveId.transform.Find ("Placeholder").gameObject.GetComponent<Text> ().text = "You must enter an ID!";
 			}
 			if (objectiveDescription == "") {
-				inputFieldObjectiveDescription.transform.FindChild ("Placeholder").gameObject.GetComponent<Text> ().text = "You must enter a description!";
+				inputFieldObjectiveDescription.transform.Find ("Placeholder").gameObject.GetComponent<Text> ().text = "You must enter a description!";
 			}
 		} else {																							// Add the Objective
 			StudentRecord.Objectives newObjective = new StudentRecord.Objectives();
@@ -534,8 +534,8 @@ public class ControllerMain : MonoBehaviour {
 			//Reset Fields
 			inputFieldObjectiveId.GetComponent<InputField> ().text = "";
 			inputFieldObjectiveDescription.GetComponent<InputField> ().text = "";
-			inputFieldObjectiveId.transform.FindChild ("Placeholder").gameObject.GetComponent<Text> ().text = "Objective ID...";
-			inputFieldObjectiveDescription.transform.FindChild ("Placeholder").gameObject.GetComponent<Text> ().text = "Objective Description...";
+			inputFieldObjectiveId.transform.Find ("Placeholder").gameObject.GetComponent<Text> ().text = "Objective ID...";
+			inputFieldObjectiveDescription.transform.Find ("Placeholder").gameObject.GetComponent<Text> ().text = "Objective Description...";
 		}
 	}
 
@@ -556,13 +556,13 @@ public class ControllerMain : MonoBehaviour {
 
 		if (description == "" | weighting == "" | studentResponse == "") {										// Validate the Input Elements
 			if (description == "") {
-				inputFieldDescription.transform.FindChild ("Placeholder").gameObject.GetComponent<Text> ().text = "You must enter a description!";
+				inputFieldDescription.transform.Find ("Placeholder").gameObject.GetComponent<Text> ().text = "You must enter a description!";
 			}
 			if (weighting == "") {
-				inputFieldWeighting.transform.FindChild ("Placeholder").gameObject.GetComponent<Text> ().text = "You must enter a weighting!";
+				inputFieldWeighting.transform.Find ("Placeholder").gameObject.GetComponent<Text> ().text = "You must enter a weighting!";
 			}
 			if (studentResponse == "") {
-				inputFieldResponse.transform.FindChild ("Placeholder").gameObject.GetComponent<Text> ().text = "You must enter a student response!";
+				inputFieldResponse.transform.Find ("Placeholder").gameObject.GetComponent<Text> ().text = "You must enter a student response!";
 			}
 		} else {																								// Add the Interaction
 			StudentRecord.LearnerInteractionRecord newInteraction = new StudentRecord.LearnerInteractionRecord ();
@@ -587,9 +587,9 @@ public class ControllerMain : MonoBehaviour {
 			inputFieldWeighting.GetComponent<InputField>().text = "";
 			inputFieldResponse.GetComponent<InputField>().text = "";
 			toggleCorrect.GetComponent<Toggle>().isOn = true;
-			inputFieldDescription.transform.FindChild ("Placeholder").gameObject.GetComponent<Text> ().text = "Description...";
-			inputFieldWeighting.transform.FindChild ("Placeholder").gameObject.GetComponent<Text> ().text = "Weighting...";
-			inputFieldResponse.transform.FindChild ("Placeholder").gameObject.GetComponent<Text> ().text = "Student response...";
+			inputFieldDescription.transform.Find ("Placeholder").gameObject.GetComponent<Text> ().text = "Description...";
+			inputFieldWeighting.transform.Find ("Placeholder").gameObject.GetComponent<Text> ().text = "Weighting...";
+			inputFieldResponse.transform.Find ("Placeholder").gameObject.GetComponent<Text> ().text = "Student response...";
 		}
 
 	}
@@ -604,11 +604,11 @@ public class ControllerMain : MonoBehaviour {
 		string location = inputFieldLocation.GetComponent<InputField>().text;
 
 		if (location == "") {
-			inputFieldLocation.transform.FindChild ("Placeholder").gameObject.GetComponent<Text> ().text = "You must enter a location!";
+			inputFieldLocation.transform.Find ("Placeholder").gameObject.GetComponent<Text> ().text = "You must enter a location!";
 		} else {
 			//Reset
 			inputFieldLocation.GetComponent<InputField>().text = "";
-			inputFieldLocation.transform.FindChild ("Placeholder").gameObject.GetComponent<Text> ().text = "Location string...";
+			inputFieldLocation.transform.Find ("Placeholder").gameObject.GetComponent<Text> ().text = "Location string...";
 
 			ScormManager.SetSessionTime (currentTime);
 			ScormManager.SetLocation (location);
