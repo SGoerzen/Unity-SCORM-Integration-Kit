@@ -41,11 +41,11 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-     <Compile Include="Assets/SCORM/_Scripts/ControllerMain.cs" />
-     <Compile Include="Assets/SCORM/_Scripts/StudentRecord.cs" />
-     <Compile Include="Assets/SCORM/_Scripts/ScormAPIWrapper.cs" />
-     <Compile Include="Assets/SCORM/_Scripts/ScormManager.cs" />
-     <Compile Include="Assets/SCORM/_Scripts/AnObjective.cs" />
+     <Compile Include="Assets/SCORM/Scripts/ControllerMain.cs" />
+     <Compile Include="Assets/SCORM/Scripts/StudentRecord.cs" />
+     <Compile Include="Assets/SCORM/Scripts/ScormAPIWrapper.cs" />
+     <Compile Include="Assets/SCORM/Scripts/ScormManager.cs" />
+     <Compile Include="Assets/SCORM/Scripts/AnObjective.cs" />
      <Reference Include="UnityEngine">
      <HintPath>/Applications/Unity/Hub/Editor/2021.3.6f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.dll</HintPath>
      </Reference>
